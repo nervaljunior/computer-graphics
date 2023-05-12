@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGL Buttons Example</title>
+  <meta charset="UTF-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+</head>
+<body>
+  <canvas id="canvas" width="512" height="512"></canvas>
+  <div id="buttons">
+    <button onclick="randomizePoints()">Randomize Points</button>
+    <button onclick="runDelaunay()">Delaunay Triangulation</button>
+  </div>
+  <script>
+ 
+    const canvas = document.getElementById("canvas");
+    const renderer = new THREE.WebGLRenderer({canvas});
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
+    camera.position.set(0, 0, 5);
+
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.PointsMaterial({color: 0xffffff, size: 0.1});
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
+
+
+    const delaunay = new THREE.Delaunay();
+
+
+    function randomizePoints() {
+      const positions = [];
+      for (let i = 0; i < 20; i++) {
+        const x = Math.random() * 2 - 1;
+        const y = Math.random() * 2 - 1;
+        positions.push(x, y, 0);
+      }
+      geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    }
+
+
+    function runDelaunay() {
+      const positions = geometry.getAttribute("position").array;
+      const indices = delaunay.triangulate(positions);
+      const newGeometry = new THREE.BufferGeometry();
+      newGeometry.setIndex(indices);
+      newGeometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      const mesh = new THREE.Mesh(newGeometry, new THREE.MeshBasicMaterial({color: 0xff0000}));
+      scene.add(mesh);
+    }
+
+
+    function render() {
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+    }
+    render();
+  </script>
+</body>
+</html>
