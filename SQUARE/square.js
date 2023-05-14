@@ -25,7 +25,8 @@ window.onload = function init() {
 // Criar conjunto aleatório de pontos
 // Criar conjunto aleatório de pontos
 /*
-const n = 50;
+aqui eu gero 20 pontos aleatorios no canvas 
+const n = 20;
 const points = Array.from({length: n}, () => [Math.random() * 500, Math.random() * 500]);
 */
 // Fazer triangulação de Delaunay
