@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Library -->
+    <script src="lib/webgl-library.js"></script>
+
+    <!-- Shaders -->
+    <!-- Vertex -->
+    <script id="vs" type="x-shader/x-vertex" >
+      attribute vec4 p;
+      attribute float part;
+      uniform int pickedPart;
+      varying vec4 vc;
+
+      uniform mat4 u_modelMatrix;
+      void main(){
+         gl_Position = u_modelMatrix * p;
+         int pa = int(part);
+         vec3 color = (pa==pickedPart)?vec3(1.0):vec3(0.0,0.0,1.0);
+         if (pickedPart == 0){
+            vc = vec4(color, part/255.0);
+         } else {
+            vc = vec4(color, 1.0);
+         }
+      }
+    </script>
+
+    <!-- Fragment -->
+    <script id="fs" type="x-shader/x-fragment">
+      precision mediump float;
+      varying vec4 vc;
+      void main(){
+         gl_FragColor=vc;
+      }
+    </script>
+
+    <!-- Script JS -->
+    <script type="text/javascript" src="index.js"></script>
+  </head>
+  <body>
+    <canvas id="myCanvas" width="600" height="600"></canvas>
+  </body>
+</html>
