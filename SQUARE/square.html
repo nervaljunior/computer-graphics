@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
 
+<head>
+  <meta charset="UTF-8">
+  <title>WebGL Buttons Example</title>
+  <style type="text/css" src="style.css"></style>
+</head>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
 
@@ -30,20 +35,29 @@ main()
     gl_FragColor = fColor;
 }
 </script>
+<style type="text/css" src="style.css"></style>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js" defer></script>
 <script type="text/javascript" src="lib/Common/webgl-utils.js"></script>
 <script type="text/javascript" src="lib/Common/initShaders.js"></script>
 <script type="text/javascript" src="lib/Common/MV.js"></script>
 <script type="text/javascript" src="square.js"></script>
 
-<body style="margin: 0;">
-<canvas id="gl-canvas" width="512" height="512">>
+<body id="body">
+<div id="tudo">
+<canvas id="gl-canvas" width="800" height="512">
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
-<button id="random_points">Randomize Points</button>
-<button id="convex_hull">Convex Hull</button>
+
+<div id="buttons">
+    <button id="generate"onclick="randomizePoints()">generate points</button>
+    <button id="delaunay"onclick="runDelaunay()">Delaunay Triangulation</button>
+    <button id="vertices">vertices</button>
+    <button id="clear"onclick="clear()">clear</button>
+  </div>
 <div id="list_points">
-    
+</div>
 </div>
 </body>
 </html>
