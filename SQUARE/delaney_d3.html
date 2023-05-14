@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Triangulação de Delaunay com d3.js</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3-delaunay.v4.min.js"></script>
+  </head>
+  <body>
+    <svg width="500" height="500"></svg>
+    <script>
+      // Criar conjunto aleatório de pontos
+      const n = 50;
+      const points = Array.from({length: n}, () => [Math.random() * 500, Math.random() * 500]);
+
+      // Fazer triangulação de Delaunay
+      const delaunay = d3.Delaunay.from(points);
+
+      // Plotar triangulação de Delaunay
+      const svg = d3.select("svg");
+      svg.selectAll("path")
+        .data(delaunay.trianglePolygons())
+        .join("path")
+          .attr("d", polygon => "M" + polygon.join("L") + "Z")
+          .attr("fill", "none")
+          .attr("stroke", "black");
+    </script>
+  </body>
+</html>

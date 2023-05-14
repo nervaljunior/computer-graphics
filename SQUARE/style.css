@@ -8,6 +8,11 @@ canvas { display: block; }
   align-items: center;
 
 }
+
+#gl-canvas{
+    display: block;
+    margin: 0 auto;
+}
 body {
   background-color: black;
   display: flex;
@@ -19,6 +24,7 @@ body {
   position: absolute;
   top: 10px;
   left: 10px;
+  background-color: blue;
 }
   
 #buttons button {

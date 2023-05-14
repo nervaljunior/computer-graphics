@@ -1,159 +1,53 @@
-var canvas;
-var gl;
-
-var maxNumTriangles = 200;
-var maxNumVertices = 3 * maxNumTriangles;
-var index = 0;
-
-var colors = [
-  vec4(0.0, 0.0, 0.0, 1.0), // black
-  vec4(1.0, 0.0, 0.0, 1.0), // red
-  vec4(1.0, 1.0, 0.0, 1.0), // yellow
-  vec4(0.0, 1.0, 0.0, 1.0), // green
-  vec4(0.0, 0.0, 1.0, 1.0), // blue
-  vec4(1.0, 0.0, 1.0, 1.0), // magenta
-  vec4(0.0, 1.0, 1.0, 1.0), // cyan
-];
-
-window.onload = function init() {
-  canvas = document.getElementById("gl-canvas");
-
-  gl = WebGLUtils.setupWebGL(canvas);
-  if (!gl) {
-    alert("WebGL isn't available");
-  }
-
-  //canvas.addEventListener("mousedown", function(){
-  canvas.addEventListener("mousedown", function (event) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    var t = vec2(
-      2 * event.clientX / canvas.width - 1,
-      2 * (canvas.height - event.clientY) / canvas.height - 1
-    );
-    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * index, flatten(t));
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    t = vec4(colors[index % 7]);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * index, flatten(t));
-    index++;
-  });
-
-  gl.viewport(0, 0, canvas.width, canvas.height);
-  gl.clearColor(0.5, 0.5, 0.5, 1.0);
-
-  // Load shaders and initialize attribute buffers
-  var program = initShaders(gl, "vertex-shader", "fragment-shader");
-  gl.useProgram(program);
-
-  var vBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, 8 * maxNumVertices, gl.STATIC_DRAW);
-
-  var vPosition = gl.getAttribLocation(program, "vPosition");
-  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(vPosition);
-
-  var cBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, 16 * maxNumVertices, gl.STATIC_DRAW);
-
-  var vColor = gl.getAttribLocation(program, "vColor");
-  gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(vColor);
-
-  render();
-};
-
-function render() {
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.drawArrays(gl.POINTS, 0, index);
-
-  window.requestAnimFrame(render);
-}
-
-
-
-
-----------------------------------------------------------------------------------------
-
-
-function clearScene() {
-  // Remove previous mesh (if any)
-  const previousMesh = scene.getObjectByName("mesh");
-  if (previousMesh) {
-    scene.remove(previousMesh);
-  }
-  // Remove all other objects
-  scene.children.forEach((object) => {
-    if (object.type === "Mesh" || object.type === "Points") {
-      scene.remove(object);
+  delaunay.addEventListener("click", function (event) {
+    var numOuterPoints = point.length;
+    var outerPointArray = new Float32Array(numOuterPoints * 2);
+    for (var i = 0; i < numOuterPoints; i++) {
+      outerPointArray[2 * i] = outerPoints[i].x;
+      outerPointArray[2 * i + 1] = outerPoints[i].y;
     }
+    var polygon = d3.polygon(outerPointArray);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(polygon), gl.STATIC_DRAW);
+    gl.drawArrays(gl.LINE_LOOP, 0, polygon.length / 2);
+
+    var data = [];
+    for (var i = 0; i < count; i++) {
+      data.push([point[i].x, point[i].y]);
+    }
+    var triangles = d3.Delaunay.from(data).triangles();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(triangles), gl.STATIC_DRAW);
+    gl.drawArrays(gl.TRIANGLES, 0, triangles.length);
+
   });
-}
 
-
-
-
-
---------------------------------------------------------------------------------------
-
-const canvas = document.getElementById("canvas");
-const renderer = new THREE.WebGLRenderer({canvas});
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, canvas.width / canvas.height, 0.1, 1000);
-camera.position.set(0, 0, 5);
-
-// Setup points and geometry
-const geometry = new THREE.BufferGeometry();
-const material = new THREE.PointsMaterial({color: 0xffffff, size: 0.1});
-const points = new THREE.Points(geometry, material);
-scene.add(points);
-
-// Initialize Delaunay triangulation
-const delaunay = new THREE.Delaunay();
-
-// Randomize points function
-function randomizePoints() {
-  const positions = [];
-  for (let i = 0; i < 20; i++) {
-    const x = Math.random() * 2 - 1;
-    const y = Math.random() * 2 - 1;
-    positions.push(x, y, 0);
-  }
-  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-}
-
-// Delaunay triangulation function
-function runDelaunay() {
-  // Remove previous mesh (if any)
-  const previousMesh = scene.getObjectByName("mesh");
-  if (previousMesh) {
-    scene.remove(previousMesh);
+  /*
+  function drawTriangles(points, triangles) {
+    const canvas = document.getElementById("canvas"); // Obter o elemento canvas do HTML
+    const context = canvas.getContext("2d"); // Obter o contexto 2D do canvas
+    
+    context.clearRect(0, 0, canvas.width, canvas.height); // Limpar o canvas
+    
+    triangles.forEach(triangle => {
+      const p1 = points[triangle.a];
+      const p2 = points[triangle.b];
+      const p3 = points[triangle.c];
+      
+      context.beginPath(); // Iniciar o caminho do desenho
+      
+      context.moveTo(p1.x, p1.y); // Mover o ponto inicial para p1
+      
+      context.lineTo(p2.x, p2.y); // Desenhar a linha até p2
+      context.lineTo(p3.x, p3.y); // Desenhar a linha até p3
+      context.lineTo(p1.x, p1.y); // Desenhar a linha de volta para p1
+      
+      context.closePath(); // Fechar o caminho do desenho
+      
+      context.stroke(); // Desenhar as linhas
+    });
   }
 
-  const positions = geometry.getAttribute("position").array;
-  const indices = delaunay.triangulate(positions);
-  const newGeometry = new THREE.BufferGeometry();
-  newGeometry.setIndex(indices);
-  newGeometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-  const mesh = new THREE.Mesh(newGeometry, new THREE.MeshBasicMaterial({color: 0xff0000}));
-  mesh.name = "mesh";
-  scene.add(mesh);
-}
-
-// Add event listener to button
-const button = document.getElementById("generate");
-button.addEventListener("click", () => {
-  randomizePoints();
-  runDelaunay();
-});
-
-
-
--------------------------------------------------------------------------------------------
-
-
-function draw() {
+  function draw() {
   // desenhe os pontos
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.viewport(0, 0, canvas.width, canvas.height);
@@ -168,147 +62,4 @@ function draw() {
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(flatten(triangles)), gl.STATIC_DRAW);
   gl.drawElements(gl.LINES, triangles.length, gl.UNSIGNED_SHORT, 0);
 }
-
-
-------------------------------------------------------------------------------
-
-canvas.addEventListener("mousedown", function (event) {
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    var t = vec2(getRandomArbitrary(-1.0, 1.0), getRandomArbitrary(-1.0, 1.0));
-    gl.bufferSubData(gl.ARRAY_BUFFER, 8 * index, flatten(t));
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    t = vec4(colors[index % 7]);
-    gl.bufferSubData(gl.ARRAY_BUFFER, 16 * index, flatten(t));
-    index++;
-  });
-
-
-
-
-  ------------------------------------------------------------------------------------------
-  // Definir lista de pontos
-const points = [
-  {x: 0, y: 0},
-  {x: 100, y: 0},
-  {x: 50, y: 86.6},
-  {x: 50, y: 43.3},
-];
-
-// Definir lista de triângulos
-const triangles = [
-  {a: 0, b: 1, c: 2},
-  {a: 0, b: 1, c: 3},
-  {a: 0, b: 2, c: 3},
-  {a: 1, b: 2, c: 3},
-];
-
-// Função para interligar pontos e formar triângulos
-function drawTriangles(points, triangles) {
-  const canvas = document.getElementById("canvas"); // Obter o elemento canvas do HTML
-  const context = canvas.getContext("2d"); // Obter o contexto 2D do canvas
-  
-  context.clearRect(0, 0, canvas.width, canvas.height); // Limpar o canvas
-  
-  triangles.forEach(triangle => {
-    const p1 = points[triangle.a];
-    const p2 = points[triangle.b];
-    const p3 = points[triangle.c];
-    
-    context.beginPath(); // Iniciar o caminho do desenho
-    
-    context.moveTo(p1.x, p1.y); // Mover o ponto inicial para p1
-    
-    context.lineTo(p2.x, p2.y); // Desenhar a linha até p2
-    context.lineTo(p3.x, p3.y); // Desenhar a linha até p3
-    context.lineTo(p1.x, p1.y); // Desenhar a linha de volta para p1
-    
-    context.closePath(); // Fechar o caminho do desenho
-    
-    context.stroke(); // Desenhar as linhas
-  });
-}
-
-drawTriangles(points, triangles); // Chamar a função para desenhar os triângulos
-
-
-
--------------------------------------------------------------------------
-
-
-function triangulate(points) {
-  // Cria o objeto supertriângulo
-  const supertriangle = createSupertriangle(points);
-
-  // Adiciona o supertriângulo à lista de triângulos
-  const triangles = [supertriangle];
-
-  // Percorre cada ponto e adiciona-o aos triângulos apropriados
-  for (let i = 0; i < points.length; i++) {
-    const point = points[i];
-    const edgeList = [];
-    const triangleList = [];
-
-    // Verifica se o ponto está dentro do círculo circunscrito de cada triângulo
-    for (let j = 0; j < triangles.length; j++) {
-      const triangle = triangles[j];
-      const inCircle = isPointInCircle(point, triangle);
-
-      if (inCircle) {
-        // Adiciona as arestas do triângulo a uma lista de arestas a serem removidas
-        edgeList.push([triangle.a, triangle.b]);
-        edgeList.push([triangle.b, triangle.c]);
-        edgeList.push([triangle.c, triangle.a]);
-
-        // Adiciona o triângulo à lista de triângulos a serem removidos
-        triangleList.push(triangle);
-      }
-    }
-
-    // Remove todas as arestas duplicadas da lista de arestas a serem removidas
-    const uniqueEdges = [];
-    edgeList.forEach(edge => {
-      if (!edgeList.some(e => (e[0] === edge[1] && e[1] === edge[0]))) {
-        uniqueEdges.push(edge);
-      }
-    });
-
-    // Remove os triângulos da lista de triângulos a serem removidos
-    const uniqueTriangles = [];
-    triangleList.forEach(triangle => {
-      if (!triangles.some(t => (t.a === triangle.a && t.b === triangle.b && t.c === triangle.c))) {
-        uniqueTriangles.push(triangle);
-      }
-    });
-
-    // Cria novos triângulos a partir das arestas remanescentes e do novo ponto
-    uniqueEdges.forEach(edge => {
-      triangles.push({
-        a: edge[0],
-        b: edge[1],
-        c: i
-      });
-    });
-  }
-
-  // Remove todos os triângulos que possuem um vértice do supertriângulo
-  return triangles.filter(triangle => (
-    triangle.a < points.length && 
-    triangle.b < points.length &&
-    triangle.c < points.length
-  ));
-}
-
-function createSupertriangle(points) {
-  const minX = points.reduce((min, p) => (p.x < min ? p.x : min), points[0].x);
-  const minY = points.reduce((min, p) => (p.y < min ? p.y : min), points[0].y);
-  const maxX = points.reduce((max, p) => (p.x > max ? p.x : max), points[0].x);
-  const maxY = points.reduce((max, p) => (p.y > max ? p.y : max), points[0].y);
-
-  const dx = maxX - minX;
-  const dy = maxY - minY;
-  const deltaMax = Math.max(dx, dy);
-  const midX = (minX + maxX) / 2;
-  const midY = (minY + maxY) / 2;
-
-  return
+*/

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <title>WebGL Buttons Example</title>
-  <style type="text/css" src="style.css"></style>
+  <link type="text/css" src="style.css" rel="stylesheet">
 </head>
 
 <script id="vertex-shader" type="x-shader/x-vertex">
@@ -36,25 +36,29 @@ main()
 }
 </script>
 <style type="text/css" src="style.css"></style>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js" defer></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <script type="text/javascript" src="lib/Common/webgl-utils.js"></script>
 <script type="text/javascript" src="lib/Common/initShaders.js"></script>
 <script type="text/javascript" src="lib/Common/MV.js"></script>
 <script type="text/javascript" src="square.js"></script>
 
 <body id="body">
+  <footer>
+    <!-- Meus scripts -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="script.js"></script>
+  </footer>
 <div id="tudo">
-<canvas id="gl-canvas" width="800" height="512">
+<canvas id="gl-canvas" width="610" height="512">
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
-
+<script type="text/javascript" src="square.js"></script>
 <div id="buttons">
     <button id="generate"onclick="randomizePoints()">generate points</button>
     <button id="delaunay"onclick="runDelaunay()">Delaunay Triangulation</button>
+    <button id="Voronoi"onclick="runDelaunay()">Diagrama de Voronoi</button>
     <button id="vertices">vertices</button>
-    <button id="clear"onclick="clear()">clear</button>
+    <button id="clear"onclick="clear()">atualizar</button>
   </div>
 <div id="list_points">
 </div>
