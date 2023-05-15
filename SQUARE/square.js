@@ -18,40 +18,109 @@ window.onload = function init() {
   
   generate = document.getElementById("generate");
   delau = document.getElementById("delaunay");
-  Voronoi = document.getElementById("Voronoi");
   clear = document.getElementById("clear");
+  pontos = document.getElementById("pontos");
   vertices = document.getElementById("vertices");
 
   delau.addEventListener("click", function(event) {
-    const points = point.slice(0, length_point);
-    const delaunay = d3.Delaunay.from(points);
-    const context = canvas.getContext("webgl");
-    context.clearColor(0.5, 0.5, 0.5, 1.0);
-    context.clear(context.COLOR_BUFFER_BIT);
-    const triangles = delaunay.triangleArray();
-    const edges = new Set();
-    for (let i = 0; i < triangles.length; i += 3) {
-      edges.add(`${triangles[i]}-${triangles[i+1]}`);
-      edges.add(`${triangles[i+1]}-${triangles[i+2]}`);
-      edges.add(`${triangles[i+2]}-${triangles[i]}`);
-    }
-    const positions = points.flatMap(p => [p[0], p[1]]);
-    const indices = Array.from(edges.values()).flatMap(edge => {
-      const [i, j] = edge.split("-").map(Number);
-      return [i, j];
-    });
-    const buffer = context.createBuffer();
-    context.bindBuffer(context.ARRAY_BUFFER, buffer);
-    context.bufferData(context.ARRAY_BUFFER, new Float32Array(positions), context.STATIC_DRAW);
-    const positionLoc = context.getAttribLocation(context.program, "vPosition"); // <-- Use context instead of gl
-    context.vertexAttribPointer(positionLoc, 2, context.FLOAT, false, 0, 0);
-    context.enableVertexAttribArray(positionLoc);
-    const indexBuffer = context.createBuffer();
-    context.bindBuffer(context.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    context.bufferData(context.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), context.STATIC_DRAW);
-    context.drawElements(context.LINES, indices.length, context.UNSIGNED_SHORT, 0);
-  });
+
+const delaunay = d3.Delaunay.from(point);
+
+const gl = canvas.getContext("webgl");
+
+const vertexShaderSource = document.getElementById("vertex-shader").text;
+const fragmentShaderSource = document.getElementById("fragment-shader").text;
+const program = initShaders(gl, vertexShaderSource, fragmentShaderSource);
+
+if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+  const error = gl.getProgramInfoLog(program);
+  console.error('Erro ao criar o programa WebGL:', error);
+  return;
+}
+
+gl.useProgram(program);
+
+gl.uniform4fv(gl.getUniformLocation(program, "uColor"), [0.0, 0.0, 0.0, 1.0]);
+gl.lineWidth(1);
+
+const triangles = delaunay.triangles;
+const edges = new Set();
+for (let i = 0; i < triangles.length; i += 3) {
+  edges.add(`${triangles[i]}-${triangles[i + 1]}`);
+  edges.add(`${triangles[i + 1]}-${triangles[i + 2]}`);
+  edges.add(`${triangles[i + 2]}-${triangles[i]}`);
+}
+
+const positions = Array.from(edges.values()).flatMap(edge => {
+  const [i, j] = edge.split("-").map(Number);
+  return [points[i][0], points[i][1], points[j][0], points[j][1]];
+});
+
+const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+const positionLoc = gl.getAttribLocation(program, "vPosition");
+gl.enableVertexAttribArray(positionLoc);
+gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+
+gl.drawArrays(gl.LINES, 0, positions.length / 2);
+
+
+    /*delaunay = d3.Delaunay.from(point);
+
+    canvas = document.querySelector("canvas");
+    context = canvas.getContext("2d");
+
+    context.strokeStyle = "black";
+    context.beginPath();
+    delaunay.render(context);
+    context.stroke();*/
+    // Criando a triangulação de Delaunay
+/*const canvas = document.querySelector("canvas");
+
+const delaunay = d3.Delaunay.from(point);
+
+// Obtendo o contexto WebGL
+const gl = canvas.getContext("webgl");
+
+// Compilando os shaders e vinculando o programa WebGL
+const vertexShaderSource = document.getElementById("vertex-shader").text;
+const fragmentShaderSource = document.getElementById("fragment-shader").text;
+const program = initShaders(gl, vertexShaderSource, fragmentShaderSource);
+gl.useProgram(program);
+
+// Configurando o estilo das arestas
+gl.uniform4fv(gl.getUniformLocation(program, "uColor"), [0.0, 0.0, 0.0, 1.0]);
+gl.lineWidth(1);
+
+// Obtendo as arestas da triangulação
+const triangles = delaunay.triangles;
+const edges = new Set();
+for (let i = 0; i < triangles.length; i += 3) {
+  edges.add(`${triangles[i]}-${triangles[i + 1]}`);
+  edges.add(`${triangles[i + 1]}-${triangles[i + 2]}`);
+  edges.add(`${triangles[i + 2]}-${triangles[i]}`);
+}
+
+// Obtendo os vértices das arestas
+const positions = Array.from(edges.values()).flatMap(edge => {
+  const [i, j] = edge.split("-").map(Number);
+  return [points[i][0], points[i][1], points[j][0], points[j][1]];
+});
+
+// Criando buffers e atributos
+const positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+const positionLoc = gl.getAttribLocation(program, "vPosition");
+gl.enableVertexAttribArray(positionLoc);
+gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+
+// Desenhando as arestas
+gl.drawArrays(gl.LINES, 0, positions.length / 2);*/
+ });
   
+
 
   gl = WebGLUtils.setupWebGL(canvas);
   if (!gl) {
@@ -77,6 +146,34 @@ window.onload = function init() {
     index++;
   });
    
+  pontos.addEventListener("click", function (event) {
+    let tabela_pontos = `
+      <table style="border-collapse: collapse; width: 100%;">
+        <thead>
+          <tr>
+            <th style="border: 1px solid black; padding: 8px; text-align: left; background-color: #f2f2f2;">Pontos</th>
+            <th style="border: 1px solid black; padding: 8px; text-align: left; background-color: #f2f2f2;">Coordenadas</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+  
+    for (let i = 0; i < point.length-2; i++) {
+      tabela_pontos += `
+        <tr style="border: 1px solid black;">
+          <td style="border: 1px solid black; padding: 8px;"> ponto ${i+1}</td>
+          <td style="border: 1px solid black; padding: 8px;">{X: ${point[i].x} , Y: ${point[i].y}}</td>
+        </tr>
+      `;
+    }
+  
+    tabela_pontos += `
+        </tbody>
+      </table>
+    `;
+    document.write(tabela_pontos);
+  });
+
   generate.addEventListener("click", function (event) {
     while (count <= 21) {
       gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
@@ -194,7 +291,7 @@ window.onload = function init() {
 function render() {
   gl.clear(gl.COLOR_BUFFER_BIT);
   gl.drawArrays(gl.point, 0, 20);
-  gl.drawArrays(gl.LINE_LOOP, 0,20);
+  //gl.drawArrays(gl.LINE_LOOP, 0,20);
   window.requestAnimFrame(render);
 }
 
