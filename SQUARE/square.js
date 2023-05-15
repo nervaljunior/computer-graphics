@@ -52,7 +52,6 @@ window.onload = function init() {
     context.drawElements(context.LINES, indices.length, context.UNSIGNED_SHORT, 0);
   });
   
-
   gl = WebGLUtils.setupWebGL(canvas);
   if (!gl) {
     alert("WebGL isn't available");
