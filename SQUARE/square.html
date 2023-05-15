@@ -3,7 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>WebGL Buttons Example</title>
+  <title>Triangulação de Delaunay canvas</title>
+    
   <link type="text/css" src="style.css" rel="stylesheet">
 </head>
 
@@ -49,19 +50,19 @@ main()
     <script src="script.js"></script>
   </footer>
 <div id="tudo">
-<canvas id="gl-canvas" width="610" height="512">
+<canvas id="gl-canvas" width="500" height="500">
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
 <script type="text/javascript" src="square.js"></script>
- <script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
 <script src="https://d3js.org/d3-delaunay.v4.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6.4.1/dist/d3-delaunay.min.js"></script>
 
 <div id="buttons">
-    <button id="generate"onclick="randomizePoints()">generate points</button>
-    <button id="delaunay"onclick="runDelaunay()">Delaunay Triangulation</button>
-    <button id="vertices">vertices</button>
-    <button id="clear"onclick="clear()">atualizar</button>
+    <button id="generate">generate points</button>
+    <button id="delaunay">Delaunay Triangulation</button>
+    <button id="vertices">casco convexo</button>
+    <button id="pontos">pontos</button>
+    <button id="clear">atualizar</button>
   </div>
 <div id="list_points">
 </div>

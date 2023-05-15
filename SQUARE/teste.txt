@@ -1,65 +1,42 @@
-  delaunay.addEventListener("click", function (event) {
-    var numOuterPoints = point.length;
-    var outerPointArray = new Float32Array(numOuterPoints * 2);
-    for (var i = 0; i < numOuterPoints; i++) {
-      outerPointArray[2 * i] = outerPoints[i].x;
-      outerPointArray[2 * i + 1] = outerPoints[i].y;
-    }
-    var polygon = d3.polygon(outerPointArray);
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(polygon), gl.STATIC_DRAW);
-    gl.drawArrays(gl.LINE_LOOP, 0, polygon.length / 2);
-
-    var data = [];
-    for (var i = 0; i < count; i++) {
-      data.push([point[i].x, point[i].y]);
-    }
-    var triangles = d3.Delaunay.from(data).triangles();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(triangles), gl.STATIC_DRAW);
-    gl.drawArrays(gl.TRIANGLES, 0, triangles.length);
-
-  });
-
-  /*
-  function drawTriangles(points, triangles) {
-    const canvas = document.getElementById("canvas"); // Obter o elemento canvas do HTML
-    const context = canvas.getContext("2d"); // Obter o contexto 2D do canvas
-    
-    context.clearRect(0, 0, canvas.width, canvas.height); // Limpar o canvas
-    
-    triangles.forEach(triangle => {
-      const p1 = points[triangle.a];
-      const p2 = points[triangle.b];
-      const p3 = points[triangle.c];
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Triangulação de Delaunay com d3.js em um canvas</title>
+    <style>
+      canvas {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3-delaunay.v4.min.js"></script>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+      const width = canvas.width;
+      const height = canvas.height;
       
-      context.beginPath(); // Iniciar o caminho do desenho
+      const n = 20;
+      const points = Array.from({length: n}, () => [Math.random() * width, Math.random() * height]);
       
-      context.moveTo(p1.x, p1.y); // Mover o ponto inicial para p1
+      // Fazer triangulação de Delaunay
+      const delaunay = d3.Delaunay.from(points);
+      const triangles = delaunay.trianglePolygons();
       
-      context.lineTo(p2.x, p2.y); // Desenhar a linha até p2
-      context.lineTo(p3.x, p3.y); // Desenhar a linha até p3
-      context.lineTo(p1.x, p1.y); // Desenhar a linha de volta para p1
-      
-      context.closePath(); // Fechar o caminho do desenho
-      
-      context.stroke(); // Desenhar as linhas
-    });
-  }
-
-  function draw() {
-  // desenhe os pontos
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.viewport(0, 0, canvas.width, canvas.height);
-  gl.lineWidth(1);
-  gl.colorMask(true, true, true, true);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten(points)), gl.STATIC_DRAW);
-  gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
-  gl.drawArrays(gl.POINTS, 0, points.length);
-  // desenhe os triângulos
-  gl.lineWidth(2);
-  gl.colorMask(true, true, true, true);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(flatten(triangles)), gl.STATIC_DRAW);
-  gl.drawElements(gl.LINES, triangles.length, gl.UNSIGNED_SHORT, 0);
-}
-*/
+      // Plotar triangulação de Delaunay
+      context.strokeStyle = "black";
+      context.lineWidth = 1;
+      triangles.forEach(triangle => {
+        context.beginPath();
+        context.moveTo(triangle[0][0], triangle[0][1]);
+        context.lineTo(triangle[1][0], triangle[1][1]);
+        context.lineTo(triangle[2][0], triangle[2][1]);
+        context.closePath();
+        context.stroke();
+      });
+    </script>
+  </body>
+</html>
