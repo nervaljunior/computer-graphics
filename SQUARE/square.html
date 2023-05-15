@@ -53,10 +53,13 @@ main()
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
 <script type="text/javascript" src="square.js"></script>
+ <script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://d3js.org/d3-delaunay.v4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6.4.1/dist/d3-delaunay.min.js"></script>
+
 <div id="buttons">
     <button id="generate"onclick="randomizePoints()">generate points</button>
     <button id="delaunay"onclick="runDelaunay()">Delaunay Triangulation</button>
-    <button id="Voronoi"onclick="runDelaunay()">Diagrama de Voronoi</button>
     <button id="vertices">vertices</button>
     <button id="clear"onclick="clear()">atualizar</button>
   </div>
