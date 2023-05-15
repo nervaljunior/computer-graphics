@@ -119,8 +119,6 @@ gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
 // Desenhando as arestas
 gl.drawArrays(gl.LINES, 0, positions.length / 2);*/
  });
-  
-
 
   gl = WebGLUtils.setupWebGL(canvas);
   if (!gl) {
