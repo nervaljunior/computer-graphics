@@ -18,11 +18,20 @@ atraves desses pontos é calculado o triangulo de denauley
 ---
 # interação picking 
 a iteração acontece com dois triangulos dentro de uma viewport 
+
+https://github.com/nervaljunior/computer-graphics/assets/108685222/b37dea9c-d507-4d3d-bd79-b8191831be68
+
+
 # Triângulo de Denaulay
+
+![image](https://github.com/nervaljunior/computer-graphics/assets/108685222/a4210094-ab02-4f35-b0b8-57cdb5288fda)
+
 ### Descrição
 O Triângulo de Denaulay é um conceito fundamental na geometria computacional e em algoritmos de triangulação. Ele é amplamente utilizado em diversas áreas, como gráficos computacionais, processamento de imagens e simulações físicas.
 
 O triângulo de Denaulay é definido como uma triangulação de um conjunto de pontos no plano, em que nenhum ponto pertence ao círculo circunscrito a qualquer triângulo da triangulação. Em outras palavras, para qualquer triângulo na triangulação, o círculo circunscrito não contém nenhum outro ponto.
+
+![image](https://github.com/nervaljunior/computer-graphics/assets/108685222/591d1569-7cd7-4c04-bbb4-3008d51bef11)
 
 ### Aplicações
 A triangulação de Delaunay possui diversas aplicações práticas. Alguns exemplos incluem:
@@ -37,6 +46,10 @@ A triangulação de Delaunay possui diversas aplicações práticas. Alguns exem
 
 ### Implementação
 Existem diversos algoritmos para calcular a triangulação de Delaunay, como o algoritmo de Bowyer-Watson e o algoritmo de incrementalização. Além disso, existem bibliotecas e pacotes disponíveis em várias linguagens de programação que facilitam a implementação e o uso do Triângulo de Delaunay.
+
+
+
+![image](https://github.com/nervaljunior/computer-graphics/assets/108685222/2ff3c93d-c7d7-4837-855f-c1d4354d8d6f)
 
 Ao utilizar o Triângulo de Delaunay em seus projetos, é importante considerar a eficiência computacional e a qualidade da triangulação resultante. Algoritmos mais avançados podem oferecer melhor desempenho e triangulações mais robustas, dependendo dos requisitos específicos do seu projeto.
 
