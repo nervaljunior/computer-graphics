@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
   <title>Triangulação de Delaunay canvas</title>
-    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link type="text/css" src="style.css" rel="stylesheet">
 </head>
 
@@ -37,7 +37,6 @@ main()
 }
 </script>
 <style type="text/css" src="style.css"></style>
-<script src="https://d3js.org/d3.v7.min.js"></script>
 <script type="text/javascript" src="lib/Common/webgl-utils.js"></script>
 <script type="text/javascript" src="lib/Common/initShaders.js"></script>
 <script type="text/javascript" src="lib/Common/MV.js"></script>
@@ -45,17 +44,13 @@ main()
 
 <body id="body">
   <footer>
-    <!-- Meus scripts -->
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <script src="script.js"></script>
+    <script src="square.js"></script>
   </footer>
 <div id="tudo">
 <canvas id="gl-canvas" width="500" height="500">
 Oops ... your browser doesn't support the HTML5 canvas element
 </canvas>
 <script type="text/javascript" src="square.js"></script>
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://d3js.org/d3-delaunay.v4.min.js"></script>
 
 <div id="buttons">
     <button id="generate">generate points</button>

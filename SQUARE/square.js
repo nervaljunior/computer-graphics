@@ -22,104 +22,6 @@ window.onload = function init() {
   pontos = document.getElementById("pontos");
   vertices = document.getElementById("vertices");
 
-  delau.addEventListener("click", function(event) {
-
-const delaunay = d3.Delaunay.from(point);
-
-const gl = canvas.getContext("webgl");
-
-const vertexShaderSource = document.getElementById("vertex-shader").text;
-const fragmentShaderSource = document.getElementById("fragment-shader").text;
-const program = initShaders(gl, vertexShaderSource, fragmentShaderSource);
-
-if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-  const error = gl.getProgramInfoLog(program);
-  console.error('Erro ao criar o programa WebGL:', error);
-  return;
-}
-
-gl.useProgram(program);
-
-gl.uniform4fv(gl.getUniformLocation(program, "uColor"), [0.0, 0.0, 0.0, 1.0]);
-gl.lineWidth(1);
-
-const triangles = delaunay.triangles;
-const edges = new Set();
-for (let i = 0; i < triangles.length; i += 3) {
-  edges.add(`${triangles[i]}-${triangles[i + 1]}`);
-  edges.add(`${triangles[i + 1]}-${triangles[i + 2]}`);
-  edges.add(`${triangles[i + 2]}-${triangles[i]}`);
-}
-
-const positions = Array.from(edges.values()).flatMap(edge => {
-  const [i, j] = edge.split("-").map(Number);
-  return [points[i][0], points[i][1], points[j][0], points[j][1]];
-});
-
-const positionBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-const positionLoc = gl.getAttribLocation(program, "vPosition");
-gl.enableVertexAttribArray(positionLoc);
-gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
-
-gl.drawArrays(gl.LINES, 0, positions.length / 2);
-
-
-    /*delaunay = d3.Delaunay.from(point);
-
-    canvas = document.querySelector("canvas");
-    context = canvas.getContext("2d");
-
-    context.strokeStyle = "black";
-    context.beginPath();
-    delaunay.render(context);
-    context.stroke();*/
-    // Criando a triangulação de Delaunay
-/*const canvas = document.querySelector("canvas");
-
-const delaunay = d3.Delaunay.from(point);
-
-// Obtendo o contexto WebGL
-const gl = canvas.getContext("webgl");
-
-// Compilando os shaders e vinculando o programa WebGL
-const vertexShaderSource = document.getElementById("vertex-shader").text;
-const fragmentShaderSource = document.getElementById("fragment-shader").text;
-const program = initShaders(gl, vertexShaderSource, fragmentShaderSource);
-gl.useProgram(program);
-
-// Configurando o estilo das arestas
-gl.uniform4fv(gl.getUniformLocation(program, "uColor"), [0.0, 0.0, 0.0, 1.0]);
-gl.lineWidth(1);
-
-// Obtendo as arestas da triangulação
-const triangles = delaunay.triangles;
-const edges = new Set();
-for (let i = 0; i < triangles.length; i += 3) {
-  edges.add(`${triangles[i]}-${triangles[i + 1]}`);
-  edges.add(`${triangles[i + 1]}-${triangles[i + 2]}`);
-  edges.add(`${triangles[i + 2]}-${triangles[i]}`);
-}
-
-// Obtendo os vértices das arestas
-const positions = Array.from(edges.values()).flatMap(edge => {
-  const [i, j] = edge.split("-").map(Number);
-  return [points[i][0], points[i][1], points[j][0], points[j][1]];
-});
-
-// Criando buffers e atributos
-const positionBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-const positionLoc = gl.getAttribLocation(program, "vPosition");
-gl.enableVertexAttribArray(positionLoc);
-gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
-
-// Desenhando as arestas
-gl.drawArrays(gl.LINES, 0, positions.length / 2);*/
- });
-
   gl = WebGLUtils.setupWebGL(canvas);
   if (!gl) {
     alert("WebGL isn't available");
@@ -127,6 +29,69 @@ gl.drawArrays(gl.LINES, 0, positions.length / 2);*/
   function getRandomArbitrary(min, max) {
     return parseFloat(Math.random() * (max - min) + min);
   }
+
+  delau.addEventListener("click", function(event) {
+    // Obtenha a lista de triângulos
+    const triangles = delaunayTriangulation(point);
+    
+    // Compile os shaders
+    const vertexShaderSource = `
+    attribute vec2 aPosition;
+    
+    void main() {
+      gl_Position = vec4(aPosition, 0, 1);
+    }
+    `;
+    
+    const fragmentShaderSource = `
+    void main() {
+      gl_FragColor = vec4(1, 0, 0, 1);
+    }
+    `;
+    
+    function compileShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+      console.error('Erro ao compilar shader:', gl.getShaderInfoLog(shader));
+      gl.deleteShader(shader);
+      return null;
+    }
+    
+    return shader;
+    }
+    
+    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+    
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+    
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error('Erro ao criar o programa WebGL:', gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+    }
+    
+    gl.useProgram(program);
+    
+    // Crie um buffer para as posições dos vértices
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(point.flat()), gl.STATIC_DRAW);
+    
+    // Atribua as posições dos vértices ao atributo aPosition do shader
+    const positionLoc = gl.getAttribLocation(program, 'aPosition');
+    gl.enableVertexAttribArray(positionLoc);
+    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
+    
+    // Renderize os triângulos
+    gl.clearColor(1, 1, 1, 1);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.drawArrays(gl.TRIANGLES, 0, triangles.length * 3);
+    });
   
   canvas.addEventListener("mousedown", function (event) {
     var rect = canvas.getBoundingClientRect();
@@ -143,7 +108,102 @@ gl.drawArrays(gl.LINES, 0, positions.length / 2);*/
     gl.bufferSubData(gl.ARRAY_BUFFER, 16 * index, flatten(t));
     index++;
   });
-   
+  
+  
+function delaunayTriangulation(p) {
+  const triangles = [];
+
+  // Encontre o ponto extremo (máximo) em cada dimensão
+  const maxX = Math.max(...p.map(pontos => pontos[0]));
+  const maxY = Math.max(...p.map(pontos => pontos[1]));
+
+  // Crie um triângulo supertriângulo que contém todos os pontos
+  const superTriangle = [
+    [0, 2 * maxY],
+    [2 * maxX, 2 * maxY],
+    [maxX, 0]
+  ];
+
+  triangles.push(superTriangle);
+
+  // Adicione cada ponto um a um à triangulação
+  for (const pontos of p) {
+    const edges = [];
+
+    // Verifique se o ponto está dentro do circuncírculo de cada triângulo existente
+    for (let i = triangles.length - 1; i >= 0; i--) {
+      const triangle = triangles[i];
+      const [p1, p2, p3] = triangle;
+
+      if (ispontosInCircumcircle(pontos, p1, p2, p3)) {
+        // Os três pontos do triângulo formam uma aresta inválida
+        edges.push([p1, p2]);
+        edges.push([p2, p3]);
+        edges.push([p3, p1]);
+
+        // Remova o triângulo inválido da lista
+        triangles.splice(i, 1);
+      }
+    }
+
+    // Remova as arestas duplicadas
+    const uniqueEdges = getUniqueEdges(edges);
+
+    // Crie novos triângulos conectados às arestas válidas
+    for (const [p1, p2] of uniqueEdges) {
+      triangles.push([p1, p2, pontos]);
+    }
+  }
+
+  // Remova os triângulos que contêm vértices do supertriângulo
+  const delaunayTriangles = triangles.filter(triangle => {
+    for (const vertex of triangle) {
+      if (vertex === superTriangle[0] || vertex === superTriangle[1] || vertex === superTriangle[2]) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  return delaunayTriangles;
+}
+
+function getUniqueEdges(edges) {
+  const uniqueEdges = [];
+  const edgeSet = new Set();
+
+  for (const edge of edges) {
+    const [p1, p2] = edge;
+    const key = `${p1.toString()}-${p2.toString()}`;
+
+    if (!edgeSet.has(key)) {
+      uniqueEdges.push(edge);
+      edgeSet.add(key);
+    }
+  }
+
+  return uniqueEdges;
+}
+  
+function ispontosInCircumcircle(pontos, p1, p2, p3) {
+  const a = p1[0] - p2[0];
+  const b = p1[1] - p2[1];
+  const c = p1[0] - p3[0];
+  const d = p1[1] - p3[1];
+  const e = (a * (p1[0] + p2[0]) + b * (p1[1] + p2[1])) / 2;
+  const f = (c * (p1[0] + p3[0]) + d * (p1[1] + p3[1])) / 2;
+  const determinant = a * d - b * c;
+
+  const centerX = (d * e - b * f) / determinant;
+  const centerY = (a * f - c * e) / determinant;
+
+  const radius = Math.sqrt(Math.pow(p1[0] - centerX, 2) + Math.pow(p1[1] - centerY, 2));
+
+  const distance = Math.sqrt(Math.pow(pontos[0] - centerX, 2) + Math.pow(pontos[1] - centerY, 2));
+
+  return distance <= radius;
+}
+
   pontos.addEventListener("click", function (event) {
     let tabela_pontos = `
       <table style="border-collapse: collapse; width: 100%;">
@@ -286,10 +346,13 @@ gl.drawArrays(gl.LINES, 0, positions.length / 2);*/
   }
 };
 
+
+
 function render() {
   gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.drawArrays(gl.point, 0, 20);
-  //gl.drawArrays(gl.LINE_LOOP, 0,20);
-  window.requestAnimFrame(render);
+  gl.drawArrays(gl.POINTS, 0, 20);
+  gl.drawArrays(gl.LINE_LOOP, 0, 20);
+
+  window.requestAnimationFrame(render);
 }
 
