@@ -4,7 +4,6 @@ var gl;
 var numero_max_triang = 10;
 var maximo_de_vert = 3 * numero_max_triang;
 var point = new Array(20);
-
 var length_point;
 var index = 0;
 var count = 0;
@@ -14,10 +13,12 @@ var colors = [
   vec4(1.0, 0.0, 1.0, 1.0),   vec4(0.0, 1.0, 1.0, 1.0), 
 ];
 
+var triangles = [];
+
 window.onload = function init() {
   canvas = document.getElementById("gl-canvas");
   generate = document.getElementById("generate");
-  delau = document.getElementById("delaunay");
+  delaunay = document.getElementById("delaunay");
   clear = document.getElementById("clear");
   pontos = document.getElementById("pontos");
   vertices = document.getElementById("vertices");
@@ -30,66 +31,19 @@ window.onload = function init() {
     return parseFloat(Math.random() * (max - min) + min);
   }
 
-  delau.addEventListener("click", function(event) {
-    const triangles = delaunayTriangulation(point);
-  
-    gl.clearColor(1, 1, 1, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-  
-    const vertexShaderSource = `
-      attribute vec2 aPosition;
-      
-      void main() {
-        gl_Position = vec4(aPosition, 0, 1);
-      }
-    `;
-      
-    const fragmentShaderSource = `
-      void main() {
-        gl_FragColor = vec4(1, 0, 0, 1);
-      }
-    `;
-      
-    function compileShader(gl, type, source) {
-      const shader = gl.createShader(type);
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Erro ao compilar shader:', gl.getShaderInfoLog(shader));
-        gl.deleteShader(shader);
-        return null;
-      }
-      
-      return shader;
+  delaunay.addEventListener("click", function(event) {
+    // Verifique se há pontos suficientes para formar um triângulo
+    if (point.length < 3) {
+      alert("Você precisa gerar pelo menos 3 pontos para criar um triângulo de Delaunay.");
+      return;
     }
-      
-    const vertexShader = compileShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = compileShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-    const program = gl.createProgram();
-  
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-      
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error('Erro ao criar o programa WebGL:', gl.getProgramInfoLog(program));
-      gl.deleteProgram(program);
-    }
-      
-    gl.useProgram(program);
-      
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(point.flat()), gl.STATIC_DRAW);
-      
-    const positionLoc = gl.getAttribLocation(program, 'aPosition');
-    gl.enableVertexAttribArray(positionLoc);
-    gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
-      
-    gl.drawArrays(gl.TRIANGLES, 0, triangles.length * 3);
+    
+    // Limpe a lista de triângulos
+    triangles = delaunayTriangulation(point);
+    
+    // Renderize os triângulos
+    render();
   });
-  
   
   canvas.addEventListener("mousedown", function (event) {
     var rect = canvas.getBoundingClientRect();
@@ -105,14 +59,19 @@ window.onload = function init() {
     t = vec4(colors[index % 7]);
     gl.bufferSubData(gl.ARRAY_BUFFER, 16 * index, flatten(t));
     index++;
+    
+    // Limpe a lista de triângulos
+    triangles = [];
   });
-   
-function delaunayTriangulation(p) {
+
+  function delaunayTriangulation(p) {
   const triangles = [];
 
-  const maxX = Math.max(...p.map(pontos => pontos[0]));
-  const maxY = Math.max(...p.map(pontos => pontos[1]));
+  // Encontre o ponto extremo (máximo) em cada dimensão
+  const maxX = Math.max(...p.map(ponto => ponto[0]));
+  const maxY = Math.max(...p.map(ponto => ponto[1]));
 
+  // Crie um triângulo supertriângulo que contém todos os pontos
   const superTriangle = [
     [0, 2 * maxY],
     [2 * maxX, 2 * maxY],
@@ -121,29 +80,36 @@ function delaunayTriangulation(p) {
 
   triangles.push(superTriangle);
 
-  for (const pontos of p) {
+  // Adicione cada ponto um a um à triangulação
+  for (const ponto of p) {
     const edges = [];
 
+    // Verifique se o ponto está dentro do circuncírculo de cada triângulo existente
     for (let i = triangles.length - 1; i >= 0; i--) {
       const triangle = triangles[i];
       const [p1, p2, p3] = triangle;
 
-      if (ispontosInCircumcircle(pontos, p1, p2, p3)) {
+      if (ispontoInCircumcircle(ponto, p1, p2, p3)) {
+        // Os três pontos do triângulo formam uma aresta inválida
         edges.push([p1, p2]);
         edges.push([p2, p3]);
         edges.push([p3, p1]);
 
+        // Remova o triângulo inválido da lista
         triangles.splice(i, 1);
       }
     }
 
+    // Remova as arestas duplicadas
     const uniqueEdges = getUniqueEdges(edges);
 
+    // Crie novos triângulos conectados às arestas válidas
     for (const [p1, p2] of uniqueEdges) {
-      triangles.push([p1, p2, pontos]);
+      triangles.push([p1, p2, ponto]);
     }
   }
 
+  // Remova os triângulos que contêm vértices do supertriângulo
   const delaunayTriangles = triangles.filter(triangle => {
     for (const vertex of triangle) {
       if (vertex === superTriangle[0] || vertex === superTriangle[1] || vertex === superTriangle[2]) {
@@ -153,9 +119,11 @@ function delaunayTriangulation(p) {
     return true;
   });
 
-  return delaunayTriangles;
+  return delaunayTriangles; // Adicionando a linha corrigida
 }
 
+  
+  
 function getUniqueEdges(edges) {
   const uniqueEdges = [];
   const edgeSet = new Set();
@@ -169,36 +137,35 @@ function getUniqueEdges(edges) {
       edgeSet.add(key);
     }
   }
+
   return uniqueEdges;
 }
   
-function ispontosInCircumcircle(pontos, p1, p2, p3) {
+function ispontoInCircumcircle(p, p1, p2, p3) {
   const a = p1[0] - p2[0];
   const b = p1[1] - p2[1];
   const c = p1[0] - p3[0];
   const d = p1[1] - p3[1];
-  const e = (a * (p1[0] + p2[0]) + b * (p1[1] + p2[1])) / 2;
-  const f = (c * (p1[0] + p3[0]) + d * (p1[1] + p3[1])) / 2;
-  const determinant = a * d - b * c;
+  const e = (Math.pow(p1[0], 2) - Math.pow(p2[0], 2)) + (Math.pow(p1[1], 2) - Math.pow(p2[1], 2));
+  const f = (Math.pow(p1[0], 2) - Math.pow(p3[0], 2)) + (Math.pow(p1[1], 2) - Math.pow(p3[1], 2));
+  const g = 2 * ((p1[0] - p3[0]) * (p2[1] - p1[1]) - (p1[0] - p2[0]) * (p3[1] - p1[1]));
 
-  const centerX = (d * e - b * f) / determinant;
-  const centerY = (a * f - c * e) / determinant;
+  if (g === 0) {
+    // Os pontos são colineares, o circuncírculo não existe
+    return false;
+  }
+
+  const centerX = (e * (p2[1] - p3[1]) - f * (p1[1] - p2[1])) / g;
+  const centerY = (f * (p1[0] - p2[0]) - e * (p1[0] - p3[0])) / g;
 
   const radius = Math.sqrt(Math.pow(p1[0] - centerX, 2) + Math.pow(p1[1] - centerY, 2));
-
-  const distance = Math.sqrt(Math.pow(pontos[0] - centerX, 2) + Math.pow(pontos[1] - centerY, 2));
+  const distance = Math.sqrt(Math.pow(p[0] - centerX, 2) + Math.pow(p[1] - centerY, 2));
 
   return distance <= radius;
 }
 
+
   pontos.addEventListener("click", function (event) {
-    var pontosExport = '';
-    for (let i = 0; i < point.length - 2; i++) {
-      pontosExport += `ponto ${i + 1}: X: ${point[i].x}, Y: ${point[i].y}\n`;
-    }
-
-    download('pontos.txt', pontosExport);
-
     let tabela_pontos = `
       <table style="border-collapse: collapse; width: 100%;">
         <thead>
@@ -339,26 +306,42 @@ function ispontosInCircumcircle(pontos, p1, p2, p3) {
   document.write(tabela);
   }
 };
-
-
-function download(filename, text) {
-  var element = document.createElement('a');
-  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-  element.setAttribute('download', filename);
-
-  element.style.display = 'none';
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
-}
+  // Resto do código...
 
 
 function render() {
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.drawArrays(gl.POINTS, 0, 20);
-  gl.drawArrays(gl.LINE_LOOP, 0, 20);
-
-  window.requestAnimationFrame(render);
-}
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    
+    // Renderize os pontos
+    gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+    gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vPosition);
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+    gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vColor);
+    
+    gl.drawArrays(gl.POINTS, 0, index);
+    
+    // Renderize os triângulos
+    if (triangles.length > 0) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(triangles), gl.STATIC_DRAW);
+      gl.vertexAttribPointer(vPosition, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(vPosition);
+    
+      gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
+      var colors = [];
+      for (var i = 0; i < triangles.length; i++) {
+        colors.push(vec4(1.0, 0.0, 0.0, 1.0));
+      }
+      gl.bufferData(gl.ARRAY_BUFFER, flatten(colors), gl.STATIC_DRAW);
+      gl.vertexAttribPointer(vColor, 4, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(vColor);
+    
+      gl.drawArrays(gl.TRIANGLES, 0, triangles.length);
+    }
+    
+    requestAnimFrame(render);
+  }
+  
