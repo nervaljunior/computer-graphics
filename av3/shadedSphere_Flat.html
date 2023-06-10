@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute vec4 vPosition;
+attribute vec4 vNormal;
+
+varying vec4 fColor;
+
+
+uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec4 lightPosition;
+uniform float shininess;
+uniform mat3 normalMatrix;
+
+
+void
+main()
+{
+    vec3 pos = (modelViewMatrix * vPosition).xyz;
+    vec3 light = lightPosition.xyz;
+    vec3 L;
+    
+    // check for directional light
+    
+    if(lightPosition.w == 0.0) L = normalize(lightPosition.xyz);
+    else L = normalize( lightPosition.xyz - pos );
+
+
+	
+    vec3 E = -normalize( pos );
+    vec3 H = normalize( L + E );
+
+    // Transform vertex normal into eye coordinates
+    
+       
+    vec3 N = normalize( normalMatrix*vNormal.xyz);
+
+    // Compute terms in the illumination equation
+    vec4 ambient = ambientProduct;
+
+    float Kd = max( dot(L, N), 0.0 );
+    vec4  diffuse = Kd*diffuseProduct;
+
+    float Ks = pow( max(dot(N, H), 0.0), shininess );
+    vec4  specular = Ks * specularProduct;
+    
+    if( dot(L, N) < 0.0 ) {
+	specular = vec4(0.0, 0.0, 0.0, 1.0);
+    } 
+
+    gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+    
+    fColor = ambient + diffuse +specular;
+
+    fColor.a = 1.0;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec4 fColor;
+
+void
+main()
+{
+
+    gl_FragColor = fColor;
+
+}
+</script>
+
+<p> </p>
+<button id="Button0">Increase R</button>
+<button id="Button1">Decrease R</button>
+
+<p> </p>
+<button id="Button2">Increase theta</button>
+<button id="Button3">Decrease theta</button>
+<button id="Button4">Increase phi</button>
+<button id="Button5">Decrease phi</button>
+<p> </p>
+<button id="Button6">Increase Subdivisions</button>
+<button id="Button7">Decrease Subdivisions</button>
+
+
+<p></p>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="shadedSphere_Flat.js"></script>
+<link rel="stylesheet" href="styles.css" />
+
+<body>
+    <div class="firstContainer">
+        <canvas id="gl-canvas" width="512" height="512">
+            Oops ... your browser doesn't support the HTML5 canvas element
+        </canvas>
+        <div class="top-bottom-div">
+            <div>
+                <div class="children-top">
+                    <p class="title">Theta control:</p>
+                    <input id="sliderTheta" type="range" min="-90" max="90" step="0.5" value="0">
+                    <p class="title">Far:</p>
+                    <button id="Button14" class="button">Increase far</button>
+                    <button id="Button15" class="button">Decrease far</button>
+
+                </div>
+                <div class="children-top">
+                    <p class="title">Phi control:</p>
+                    <input id="sliderPhi" type="range" min="-90" max="90" step="0.5" value="0">
+                    <p class="title">Near:</p>
+                    <button id="Button16" class="button">Increase near</button>
+                    <button id="Button17" class="button">Decrease near</button>
+                </div>
+                <div class="children-top">
+                    <p class="title">
+                        Fovy:
+                    </p>
+                    <input id="fovSlider" type="range" min="50" max="160" step="5">
+                </div>
+            </div>
+            <div>
+                <p class="title">Change view:</p>
+                <button id="Button18" class="button">Perspective</button>
+                <button id="Button19" class="button">Ortho</button>
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <div class="container">
+        <div style="display: flex; flex-direction: column; width: 9vw">
+            <p class="title">
+                Ambient Light:
+            </p>
+            <button id="Button8" class="button">Activate</button>
+            <button id="Button9" class="button">Deactivate</button>
+        </div>
+        <div style="display: flex; flex-direction: column; width: 9vw">
+            <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 17px;">
+                Diffuse Light:
+            </p>
+            <button id="Button10" class="button">Activate</button>
+            <button id="Button11" class="button">Deactivate</button>
+        </div>
+        <div style="display: flex; flex-direction: column; width: 9vw">
+            <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 17px;">
+                Specular Light:
+            </p>
+            <button id="Button12" class="button">Activate</button>
+            <button id="Button13" class="button">Deactivate</button>
+        </div>
+    </div>
+
+</body>
+
+</html>

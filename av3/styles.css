@@ -1,0 +1,38 @@
+.firstContainer{
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+}
+
+.title{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; 
+    font-size: 17px;
+}
+
+.container{
+    display: flex;
+    column-gap: 1.5rem;
+}
+
+.button{
+    border: none; 
+    padding: 0.5rem; 
+    border-radius: 15px;
+    background: #00627d;
+    color: #fff;
+    margin: 0.4rem 0;
+}
+
+.button:hover{
+    transform: scale(1.1);
+    transition: 0.3s;
+}
+.top-bottom-div{
+    display: flex;
+    flex-direction: column;
+   
+}
+.children-top{
+    display: flex;
+    column-gap: 1rem;
+}
