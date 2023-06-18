@@ -14,19 +14,31 @@
     column-gap: 1.5rem;
 }
 
-.button{
-    border: none; 
-    padding: 0.5rem; 
-    border-radius: 15px;
-    background: #00627d;
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #e21414;
     color: #fff;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
     margin: 0.4rem 0;
-}
-
-.button:hover{
+  }
+  
+  .button:hover {
     transform: scale(1.1);
     transition: 0.3s;
-}
+    background-color: #777;
+  }
+  
+  .button:active {
+    background-color: #444;
+  }
+
+  
 .top-bottom-div{
     display: flex;
     flex-direction: column;

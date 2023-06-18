@@ -75,22 +75,6 @@ main()
 }
 </script>
 
-<p> </p>
-<button id="Button0">Increase R</button>
-<button id="Button1">Decrease R</button>
-
-<p> </p>
-<button id="Button2">Increase theta</button>
-<button id="Button3">Decrease theta</button>
-<button id="Button4">Increase phi</button>
-<button id="Button5">Decrease phi</button>
-<p> </p>
-<button id="Button6">Increase Subdivisions</button>
-<button id="Button7">Decrease Subdivisions</button>
-
-
-<p></p>
-
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/initShaders.js"></script>
 
@@ -104,21 +88,37 @@ main()
             Oops ... your browser doesn't support the HTML5 canvas element
         </canvas>
         <div class="top-bottom-div">
+            
             <div>
-                <div class="children-top">
-                    <p class="title">Theta control:</p>
-                    <input id="sliderTheta" type="range" min="-90" max="90" step="0.5" value="0">
-                    <p class="title">Far:</p>
-                    <button id="Button14" class="button">Increase far</button>
-                    <button id="Button15" class="button">Decrease far</button>
+                <div class="children-top" >
+                    <hr>
+
+                    <div style="display: flex; flex-direction: column; width: 9vw">
+                        <p class="title">
+                            Rotação ângulo alfa:
+                        </p>
+                        <button id="Button2"class="button">Antihorario</button>
+                        <button id="Button3"class="button">Horario</button>
+                    </div>
+                    <hr>
+                    <div style="display: flex; flex-direction: column; width: 9vw">
+                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 17px;">
+                            Rotação ângulo beta:
+                        </p>
+                        <button id="Button4"class="button">Cima</button>
+                        <button id="Button5"class="button">Baixo</button>
+                    </div>
+                    <hr>
+                    
+                    
+                    
 
                 </div>
+                <p></p>
                 <div class="children-top">
-                    <p class="title">Phi control:</p>
-                    <input id="sliderPhi" type="range" min="-90" max="90" step="0.5" value="0">
-                    <p class="title">Near:</p>
-                    <button id="Button16" class="button">Increase near</button>
-                    <button id="Button17" class="button">Decrease near</button>
+                    <p class="title"> Distância:</p>
+                    <button id="Button14" class="button">Aumentar(far)</button>
+                    <button id="Button15" class="button">Diminuir(near)</button>                    
                 </div>
                 <div class="children-top">
                     <p class="title">
@@ -126,41 +126,43 @@ main()
                     </p>
                     <input id="fovSlider" type="range" min="50" max="160" step="5">
                 </div>
+                <div>
+
+                    <p> </p>
+                    <button id="Button6" class="button">Aumentar Subdivisões</button>
+                    <button id="Button7"class="button">Diminuir Subdivisões</button>
+                    <p></p>
+                </div>
+                <div class="container">
+                    <hr>
+                    <div style="display: flex; flex-direction: column; width: 9vw">
+                                                <p class="title">
+                            Sombreamento de Gouraud:
+                        </p>
+                        <button id="Button8" class="button">Activate</button>
+                        <button id="Button9" class="button">Deactivate</button>
+                    </div>
+                    <hr>
+                    <div style="display: flex; flex-direction: column; width: 9vw">
+                        <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 17px;">
+                            Sombreamento de Phong;:
+                        </p>
+                        <button id="Button10" class="button">Activate</button>
+                        <button id="Button11" class="button">Deactivate</button>
+                    </div>
+                    <hr>
+                    
+                </div>
             </div>
-            <div>
-                <p class="title">Change view:</p>
-                <button id="Button18" class="button">Perspective</button>
-                <button id="Button19" class="button">Ortho</button>
-            </div>
+
+            
+
         </div>
+
 
 
     </div>
 
-
-    <div class="container">
-        <div style="display: flex; flex-direction: column; width: 9vw">
-            <p class="title">
-                Ambient Light:
-            </p>
-            <button id="Button8" class="button">Activate</button>
-            <button id="Button9" class="button">Deactivate</button>
-        </div>
-        <div style="display: flex; flex-direction: column; width: 9vw">
-            <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 17px;">
-                Diffuse Light:
-            </p>
-            <button id="Button10" class="button">Activate</button>
-            <button id="Button11" class="button">Deactivate</button>
-        </div>
-        <div style="display: flex; flex-direction: column; width: 9vw">
-            <p style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 17px;">
-                Specular Light:
-            </p>
-            <button id="Button12" class="button">Activate</button>
-            <button id="Button13" class="button">Deactivate</button>
-        </div>
-    </div>
 
 </body>
 
