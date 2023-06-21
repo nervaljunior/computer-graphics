@@ -53,5 +53,8 @@ Existem diversos algoritmos para calcular a triangulação de Delaunay, como o a
 
 Ao utilizar o Triângulo de Delaunay em seus projetos, é importante considerar a eficiência computacional e a qualidade da triangulação resultante. Algoritmos mais avançados podem oferecer melhor desempenho e triangulações mais robustas, dependendo dos requisitos específicos do seu projeto.
 
+# a terceira avaliação consiste na implementação da cena com um poliedro e seus sombrementos 
+![image](https://github.com/nervaljunior/computer-graphics/assets/108685222/9dfa2cbf-aa6a-4f47-a384-a7186c8642e9)
+
 
 ### Happy Coding!.
