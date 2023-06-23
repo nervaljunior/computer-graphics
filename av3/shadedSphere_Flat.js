@@ -117,6 +117,20 @@ window.onload = function init() {
   var program = initShaders(gl, "vertex-shader", "fragment-shader");
   gl.useProgram(program);
 
+/*
+//aqui fzd edições para o sombreamento
+// linhas para obter as localizações dos uniformes relacionados ao sombreamento de Phong:
+  var lightAmbientUniformLocation = gl.getUniformLocation(program, 'lightAmbient');
+  var lightDiffuseUniformLocation = gl.getUniformLocation(program, 'lightDiffuse');
+  var lightSpecularUniformLocation = gl.getUniformLocation(program, 'lightSpecular');
+  var materialAmbientUniformLocation = gl.getUniformLocation(program, 'materialAmbient');
+  var materialDiffuseUniformLocation = gl.getUniformLocation(program, 'materialDiffuse');
+  var materialSpecularUniformLocation = gl.getUniformLocation(program, 'materialSpecular');
+  var materialShininessUniformLocation = gl.getUniformLocation(program, 'materialShininess');
+
+
+//até aqui   */
+
   ambientProduct = mult(lightAmbient, materialAmbient);
   diffuseProduct = mult(lightDiffuse, materialDiffuse);
   specularProduct = mult(lightSpecular, materialSpecular);
@@ -172,6 +186,8 @@ window.onload = function init() {
     init();
   };
 
+//editar os eventos dos botões de 8 a 11
+//8 e 9 são do sombreamento de gouraud
   document.getElementById("Button8").onclick = function () {
     lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
     init();
@@ -180,6 +196,7 @@ window.onload = function init() {
     lightAmbient = vec4(0.0, 0.0, 0.0, 0.0);
     init();
   };
+//10 e 11 são do sombreamento de phong
 
   document.getElementById("Button10").onclick = function () {
     lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
@@ -255,6 +272,20 @@ function render() {
       );
 
   gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix));
+
+/*
+
+// aqui inserç~ies  para configurar os uniformes relacionados ao sombreamento de Phong:  
+  gl.uniform4fv(lightAmbientUniformLocation, flatten(lightAmbient));
+  gl.uniform4fv(lightDiffuseUniformLocation, flatten(lightDiffuse));
+  gl.uniform4fv(lightSpecularUniformLocation, flatten(lightSpecular));
+  gl.uniform4fv(materialAmbientUniformLocation, flatten(materialAmbient));
+  gl.uniform4fv(materialDiffuseUniformLocation, flatten(materialDiffuse));
+  gl.uniform4fv(materialSpecularUniformLocation, flatten(materialSpecular));
+  gl.uniform1f(materialShininessUniformLocation, materialShininess);
+
+// até aqui 
+*/
 
   for (var i = 0; i < index; i += 3) gl.drawArrays(gl.TRIANGLES, i, 3);
 
