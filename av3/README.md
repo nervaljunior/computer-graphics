@@ -15,41 +15,31 @@ Por razões estéticas, o sombreamento de Gouraud agora é superado por uma de s
 
 # Gouraud-Shading-and-Phong-Shading #
 
-In this project I implemented Gouraud Shading and Phong Shading on Phong Reflection Model.
+Neste projeto implementei Gouraud Shading e Phong Shading no Phong Reflection Model.
 ## Introduction: ##
-Before talking about Gouraud Shading and Phong Shading,we need to know the reflection model first.The "standard" reflection model in computer graphics that compromises between acceptable results and processing cost is the Phong model. The Phong model describes the interaction of light with a surface, in terms of the properties of the surface and the nature of the incident light. The reflection model is the basic factor in the look of a three dimensional shaded object. It enables a two dimensional screen projection of an object to look real. The Phong model reflected light in terms of a diffuse and specular component together with an ambient term. The intensity of a point on a surface is taken to be the linear combination of these three components. 
+Antes de falar sobre Gouraud Shading e Phong Shading, precisamos primeiro conhecer o modelo de reflexão. O modelo de reflexão "padrão" em computação gráfica que compromete entre resultados aceitáveis ​​e custo de processamento é o modelo Phong. O modelo Phong descreve a interação da luz com uma superfície, em termos das propriedades da superfície e da natureza da luz incidente. O modelo de reflexão é o fator básico na aparência de um objeto sombreado tridimensional. Ele permite que uma projeção de tela bidimensional de um objeto pareça real. O modelo Phong refletiu a luz em termos de um componente difuso e especular junto com um termo ambiente. A intensidade de um ponto em uma superfície é considerada a combinação linear desses três componentes.
 
 **(1) Diffuse Reflection:**
 
-![](https://github.com/ruange/Gouraud-Shading-and-Phong-Shading/blob/master/photo%20and%20gif/diffuse.JPG)
 
 **(2) Ambient Light:**
 
-![](https://github.com/ruange/Gouraud-Shading-and-Phong-Shading/blob/master/photo%20and%20gif/ambient.JPG)
 
 **(3)Specular Reflection:**
 
-![](https://github.com/ruange/Gouraud-Shading-and-Phong-Shading/blob/master/photo%20and%20gif/specular.JPG)
 
 **(4)Put all together:**
 
-![](https://github.com/ruange/Gouraud-Shading-and-Phong-Shading/blob/master/photo%20and%20gif/together.JPG)
 
-After knowing the Phong model,we now talk about the difference between Gouraud Shading and Phong Shading.The Gouraud Shading method applies the phong model
-on a subset of surface points and interpolates the intensity of
-the remaining points on the surface. In the case of a
-polygonal mesh the illumination model is usually applied at
-each vertex and the colors in the triangles interior are linearly
-interpolated from these vertex values during polygon
-rasterization.
+Depois de conhecer o modelo Phong, vamos agora falar sobre a diferença entre Gouraud Shading e Phong Shading. O método Gouraud Shading aplica o modelo Phong em um subconjunto de pontos da superfície e interpola a intensidade dos pontos restantes na superfície. No caso de uma malha poligonal, o modelo de iluminação é geralmente aplicado em cada vértice e as cores no interior dos triângulos são linearmente interpoladas a partir desses valores de vértice durante a rasterização do polígono.
 
-Unlike Gouraud shading, which interpolates colors across polygons, in Phong shading a normal vector is linearly interpolated across the surface of the polygon from the polygon's vertex normals. The surface normal is interpolated and normalized at each pixel and then used in a reflection model, e.g. the Phong reflection model, to obtain the final pixel color. Phong shading is more computationally expensive than Gouraud shading since the reflection model must be computed at each pixel instead of at each vertex.
+Ao contrário do sombreamento Gouraud, que interpola cores em polígonos, no sombreamento Phong um vetor normal é linearmente interpolado através da superfície do polígono a partir dos vértices normais do polígono. A superfície normal é interpolada e normalizada em cada pixel e então usada em um modelo de reflexão, por exemplo, o modelo de reflexão Phong, para obter a cor final do pixel. O sombreamento Phong é computacionalmente mais caro do que o sombreamento Gouraud, pois o modelo de reflexão deve ser calculado em cada pixel em vez de em cada vértice.
 
-## Implement details: ##
+## Detalhes do implemento: ##
 
-Gouraud shading (AKA Smooth Shading) is a per-vertex color computation. What this means is that the vertex shader must determine a color for each vertex and pass the color as an out variable to the fragment shader. Since this color is passed to the fragment shader as an in varying variable, it is interpolated across the fragments thus giving the smooth shading.Here is an illustration of the Gouraud Shading:
+O sombreamento Gouraud (também conhecido como Smooth Shading) é um cálculo de cor por vértice. Isso significa que o vertex shader deve determinar uma cor para cada vértice e passar a cor como uma variável de saída para o fragment shader. Uma vez que esta cor é passada para o sombreador de fragmento como uma variável variável, ela é interpolada entre os fragmentos, dando assim um sombreamento suave. Aqui está uma ilustração do Sombreamento Gouraud:
 
-![](https://github.com/ruange/Gouraud-Shading-and-Phong-Shading/blob/master/photo%20and%20gif/Gouraudshading%20process.jpg)
+
 
 The Gouraud Shading vertex shader:
 
@@ -85,10 +75,9 @@ The fragment shader:
   	 gl_FragColor = vertex_color;   
 	}
 
-In contrast, Phong shading is a per-fragment color computation. The vertex shader provides the normal and position data as out variables to the fragment shader. The fragment shader then interpolates these variables and computes the color.
-Here is an illustration of the Phong Shading:
+Em contraste, o sombreamento Phong é um cálculo de cor por fragmento. O sombreador de vértice fornece os dados normais e de posição como variáveis ​​de saída para o sombreador de fragmento. O fragment shader então interpola essas variáveis ​​e calcula a cor. Aqui está uma ilustração do Phong Shading:
 
-![](https://github.com/ruange/Gouraud-Shading-and-Phong-Shading/blob/master/photo%20and%20gif/Phongshading%20process.jpg)
+
 
 The Phong Shading vertex shader:
 
@@ -133,9 +122,8 @@ The Phong Shading fragment shader:
 
 Gouraud Shading:
 
-![](https://github.com/ruange/Gouraud-Shading-and-Phong-Shading/blob/master/photo%20and%20gif/GouraudShading.gif)
 
 Phong Shading:
 
-![](https://github.com/ruange/Gouraud-Shading-and-Phong-Shading/blob/master/photo%20and%20gif/PhongShading.gif)
+
 
