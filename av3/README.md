@@ -21,15 +21,22 @@ Antes de falar sobre Gouraud Shading e Phong Shading, precisamos primeiro conhec
 
 **(1) Diffuse Reflection:**
 
+![Imagem do WhatsApp de 2023-06-24 à(s) 14 47 55](https://github.com/nervaljunior/computer-graphics/assets/108685222/1c350160-253e-4e00-be31-0fcfd0939f89)
+
 
 **(2) Ambient Light:**
+
+![Imagem do WhatsApp de 2023-06-24 à(s) 14 47 39](https://github.com/nervaljunior/computer-graphics/assets/108685222/0b9a2721-f4cc-4b7f-b714-fcb11ec2567e)
 
 
 **(3)Specular Reflection:**
 
+![Imagem do WhatsApp de 2023-06-24 à(s) 15 31 19](https://github.com/nervaljunior/computer-graphics/assets/108685222/01c3f9d4-6a46-40cc-aa50-40be707122b2)
+
 
 **(4)Put all together:**
 
+![Imagem do WhatsApp de 2023-06-24 à(s) 14 47 27](https://github.com/nervaljunior/computer-graphics/assets/108685222/ad7d01af-e930-4a45-8810-a64386961417)
 
 Depois de conhecer o modelo Phong, vamos agora falar sobre a diferença entre Gouraud Shading e Phong Shading. O método Gouraud Shading aplica o modelo Phong em um subconjunto de pontos da superfície e interpola a intensidade dos pontos restantes na superfície. No caso de uma malha poligonal, o modelo de iluminação é geralmente aplicado em cada vértice e as cores no interior dos triângulos são linearmente interpoladas a partir desses valores de vértice durante a rasterização do polígono.
 
@@ -39,7 +46,7 @@ Ao contrário do sombreamento Gouraud, que interpola cores em polígonos, no som
 
 O sombreamento Gouraud (também conhecido como Smooth Shading) é um cálculo de cor por vértice. Isso significa que o vertex shader deve determinar uma cor para cada vértice e passar a cor como uma variável de saída para o fragment shader. Uma vez que esta cor é passada para o sombreador de fragmento como uma variável variável, ela é interpolada entre os fragmentos, dando assim um sombreamento suave. Aqui está uma ilustração do Sombreamento Gouraud:
 
-
+![Imagem do WhatsApp de 2023-06-24 à(s) 14 46 52](https://github.com/nervaljunior/computer-graphics/assets/108685222/516538f6-7504-4875-8fbf-991498c7e0c1)
 
 The Gouraud Shading vertex shader:
 
@@ -77,6 +84,7 @@ The fragment shader:
 
 Em contraste, o sombreamento Phong é um cálculo de cor por fragmento. O sombreador de vértice fornece os dados normais e de posição como variáveis ​​de saída para o sombreador de fragmento. O fragment shader então interpola essas variáveis ​​e calcula a cor. Aqui está uma ilustração do Phong Shading:
 
+![Imagem do WhatsApp de 2023-06-24 à(s) 14 47 06](https://github.com/nervaljunior/computer-graphics/assets/108685222/3aad57cf-8def-453a-a002-999b9553baa1)
 
 
 The Phong Shading vertex shader:
