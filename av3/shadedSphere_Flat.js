@@ -1,7 +1,7 @@
 var canvas;
 var gl;
 const decider = true;
-var numTimesToSubdivide = 3;
+var numTimesToSubdivide = 4.05;
 
 var index = 0;
 
@@ -179,11 +179,21 @@ window.onload = function init() {
   document.getElementById("Button10").onclick = function () {
     decider= true;
     init();
+    /*if(numTimesToSubdivide)numTimesToSubdivide=4.05;
+    index = 0;
+    pointsArray = [];
+    normalsArray = [];
+    init();*/
   };
   //11 são do sombreamento de phong
   document.getElementById("Button11").onclick = function () {
     decider=false;
-    init();
+    init();/*
+    numTimesToSubdivide=7;
+    index = 0;
+    pointsArray = [];
+    normalsArray = [];
+    init();*/
   };
 
   document.getElementById("Button14").onclick = function () {
