@@ -130,8 +130,11 @@ The Phong Shading fragment shader:
 
 Gouraud Shading:
 
+![image](https://github.com/nervaljunior/computer-graphics/assets/108685222/df7dbcf3-364a-4b91-8674-4ba54b7b888c)
 
 Phong Shading:
+
+![image](https://github.com/nervaljunior/computer-graphics/assets/108685222/c55503cb-91db-4f09-8e4d-ed11cecbaa9a)
 
 
 
