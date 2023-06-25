@@ -1,7 +1,7 @@
 var canvas;
 var gl;
 const decider = true;
-var numTimesToSubdivide = 4.05;
+var numTimesToSubdivide = 4.01;
 
 var index = 0;
 
@@ -98,6 +98,21 @@ function tetrahedron(a, b, c, d, n) {
   divideTriangle(a, c, d, n);
 }
 
+
+// Variável global para definir o tipo de sombreamento
+var shadingType = "phong";
+// aqui adicionei agr para fazer as funções de sombreamento
+function setGouraudShading() {
+    shadingType = "gouraud";
+    render();
+}
+
+function setPhongShading() {
+    shadingType = "phong";
+    render();
+}
+// até aqui 
+
 window.onload = function init() {
   canvas = document.getElementById("gl-canvas");
 
@@ -158,42 +173,29 @@ window.onload = function init() {
     phi -= dr;
   };
 
-  document.getElementById("Button6").onclick = function () {
-    numTimesToSubdivide++;
-    index = 0;
-    pointsArray = [];
-    normalsArray = [];
-    init();
-  };
-  document.getElementById("Button7").onclick = function () {
-    if (numTimesToSubdivide) numTimesToSubdivide--;
-    index = 0;
-    pointsArray = [];
-    normalsArray = [];
-    init();
-  };
 
 
 
 //10 é sombreamento de gauraud
   document.getElementById("Button10").onclick = function () {
-    decider= true;
-    init();
-    /*if(numTimesToSubdivide)numTimesToSubdivide=4.05;
+    /*decider= true;
+
+    init();*/
+    if(numTimesToSubdivide)numTimesToSubdivide=4.01;
     index = 0;
     pointsArray = [];
     normalsArray = [];
-    init();*/
+    init();
   };
   //11 são do sombreamento de phong
   document.getElementById("Button11").onclick = function () {
-    decider=false;
-    init();/*
+    /*decider=false;
+    init();*/
     numTimesToSubdivide=7;
     index = 0;
     pointsArray = [];
     normalsArray = [];
-    init();*/
+    init();
   };
 
   document.getElementById("Button14").onclick = function () {
@@ -261,18 +263,6 @@ function render() {
       );
 
   gl.uniformMatrix3fv(normalMatrixLoc, false, flatten(normalMatrix));
-/*
-  // Início da parte que você quer adicionar
-  var L;
-  if (decider === true) {
-    if (lightPosition.w == 0.0) L = normalize(lightPosition.xyz);
-    else L = normalize(lightPosition.xyz - pos);
-  } else {
-    if (lightPosition2.w == 0.0) L = normalize(lightPosition2.xyz);
-    else L = normalize(lightPosition2.xyz - pos);
-  }
-  // Fim da parte que você quer adicionar
-  */
 
   for (var i = 0; i < index; i += 3) gl.drawArrays(gl.TRIANGLES, i, 3);
 
