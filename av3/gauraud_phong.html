@@ -80,6 +80,7 @@ void main()
         vertexColor += Kd * diffuseProduct.rgb * max(dot(N, L), 0.0);
         vertexColor += Kd2 * diffuseProduct.rgb * max(dot(N, L2), 0.0);
         vertexColor += Ks * specularProduct.rgb * pow(max(dot(N, H), 0.0), shininess);
+        
     
         return vertexColor;
     }
@@ -95,12 +96,40 @@ void main()
         vertexColor += Kd * diffuseProduct.rgb * max(dot(N_interp, L_interp), 0.0);
         vertexColor += Kd2 * diffuseProduct.rgb * max(dot(N_interp, L2_interp), 0.0);
         vertexColor += Ks * specularProduct.rgb * pow(max(dot(N_interp, H_interp), 0.0), shininess);
+
     
         return vertexColor;
     }
-    
-    
 
+    // Função para calcular a média dos valores dos quatro polígonos adjacentes a um vértice
+function calcularMediaPoligonosAdjacentes(malha, valores) {
+    var media = [];
+    
+    // Iterar sobre cada vértice da malha
+    for (var i = 0; i < malha.length; i++) {
+      var vertice = malha[i];
+      var adjacencias = vertice.adjacentes;
+      var somaValores = 0;
+      var contador = 0;
+      
+      // Iterar sobre os vértices adjacentes e somar seus valores
+      for (var j = 0; j < adjacencias.length; j++) {
+        var indiceAdjacente = adjacencias[j];
+        somaValores += valores[indiceAdjacente];
+        contador++;
+      }
+      
+      // Calcular a média dos valores dos polígonos adjacentes
+      var mediaVertice = somaValores / contador;
+      
+      // Adicionar a média ao array de médias
+      media.push(mediaVertice);
+    }
+    
+    return media;
+  }
+
+  
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
