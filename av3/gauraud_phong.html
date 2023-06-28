@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html>
 
-<script id="vertex-shader" type="x-shader/x-vertex">
+<script id="verteex-shader" type="x-shader/x-vertex">
 
+    
 attribute vec4 vPosition;
 attribute vec4 vNormal;
+varying vec3 v;
+varying vec3 N;
 
 varying vec4 fColor;
 
 
 uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 uniform vec4 lightPosition;
@@ -19,6 +23,7 @@ uniform mat3 normalMatrix;
 
 void main()
 {
+    
     vec3 pos = (modelViewMatrix * vPosition).xyz;
     vec3 light = lightPosition.xyz;
     vec3 L;
@@ -57,6 +62,45 @@ void main()
 
     fColor.a = 1.0;
 }
+
+</script>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+    if (shadingType == "gouraud") {
+        fColor = vec4(computeGouraudColor(), 1.0);
+    } else if (shadingType == "phong") {
+        fColor = vec4(computePhongColor(), 1.0);
+    }
+    
+    vec3 computeGouraudColor() {
+        vec3 vertexColor = vec3(0.0);
+    
+        vertexColor += ambientProduct.rgb;
+        vertexColor += Kd * diffuseProduct.rgb * max(dot(N, L), 0.0);
+        vertexColor += Kd2 * diffuseProduct.rgb * max(dot(N, L2), 0.0);
+        vertexColor += Ks * specularProduct.rgb * pow(max(dot(N, H), 0.0), shininess);
+    
+        return vertexColor;
+    }
+    vec3 computePhongColor() {
+        vec3 N_interp = normalize(normalMatrix * vNormal.xyz);
+        vec3 L_interp = normalize(lightPosition.xyz - pos);
+        vec3 L2_interp = normalize(lightPosition2.xyz - pos);
+        vec3 H_interp = normalize(L_interp + E);
+    
+        vec3 vertexColor = vec3(0.0);
+    
+        vertexColor += ambientProduct.rgb;
+        vertexColor += Kd * diffuseProduct.rgb * max(dot(N_interp, L_interp), 0.0);
+        vertexColor += Kd2 * diffuseProduct.rgb * max(dot(N_interp, L2_interp), 0.0);
+        vertexColor += Ks * specularProduct.rgb * pow(max(dot(N_interp, H_interp), 0.0), shininess);
+    
+        return vertexColor;
+    }
+    
+    
+
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
@@ -138,6 +182,19 @@ main()
                         <button id="Button11" class="button">Sombreamento de Phong</button>
                     </div>
                     <hr>
+                    
+                </div>
+                <div class="shading">
+                
+                    <div style="display: flex; flex-direction: column; width: 9vw">
+                                               
+                        <button id="Button5" onclick= "setGouraudShading()" class="button2">Sombreamento de Gouraud</button>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; width: 9vw">
+                        
+                        <button id="Button6" onclick= "setPhongShading()"class="button2">Sombreamento de Phong</button>
+                    </div>
                     
                 </div>
             </div>

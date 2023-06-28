@@ -27,6 +27,19 @@
     transition: background-color 0.3s ease;
     margin: 0.4rem 0;
   }
+.button2 {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+    background-color: #ffffff;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    margin: 0.4rem 0;
+  }
   
   .button:hover {
     transform: scale(1.1);

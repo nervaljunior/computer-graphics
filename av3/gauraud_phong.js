@@ -1,7 +1,7 @@
 var canvas;
 var gl;
 const decider = true;
-var numTimesToSubdivide = 4.01;
+var numTimesToSubdivide = 4.02;
 
 var index = 0;
 
@@ -37,8 +37,8 @@ var lightAmbient = vec4(0.2, 0.2, 0.2, 1.0);
 var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
 var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
 
-var materialAmbient = vec4(1.0, 0.0, 1.0, 1.0);
-var materialDiffuse = vec4(1.0, 0.8, 0.0, 1.0);
+var materialAmbient = vec4(0.0, 0.0, 1.0, 0.0);
+var materialDiffuse = vec4(1.0, 0.8, 1.0, 1.0);
 var materialSpecular = vec4(1.0, 1.0, 1.0, 1.0);
 var materialShininess = 20.0;
 
@@ -99,19 +99,6 @@ function tetrahedron(a, b, c, d, n) {
 }
 
 
-// Variável global para definir o tipo de sombreamento
-var shadingType = "phong";
-// aqui adicionei agr para fazer as funções de sombreamento
-function setGouraudShading() {
-    shadingType = "gouraud";
-    render();
-}
-
-function setPhongShading() {
-    shadingType = "phong";
-    render();
-}
-// até aqui 
 
 window.onload = function init() {
   canvas = document.getElementById("gl-canvas");
@@ -122,14 +109,14 @@ window.onload = function init() {
   }
 
   gl.viewport(0, 0, canvas.width, canvas.height);
-  gl.clearColor(0.8, 0.8, 0.8, 1.0);
+  gl.clearColor(0.8, 0., 0.0, 1.0);
 
   gl.enable(gl.DEPTH_TEST);
 
   //
   //  Load shaders and initialize attribute buffers
   //
-  var program = initShaders(gl, "vertex-shader", "fragment-shader");
+  var program = initShaders(gl, "verteex-shader", "fragment-shader");
   gl.useProgram(program);
 
 
@@ -181,7 +168,7 @@ window.onload = function init() {
     /*decider= true;
 
     init();*/
-    if(numTimesToSubdivide)numTimesToSubdivide=4.01;
+    if(numTimesToSubdivide)numTimesToSubdivide=4.02;
     index = 0;
     pointsArray = [];
     normalsArray = [];
@@ -191,7 +178,7 @@ window.onload = function init() {
   document.getElementById("Button11").onclick = function () {
     /*decider=false;
     init();*/
-    numTimesToSubdivide=7;
+    numTimesToSubdivide=6.5;
     index = 0;
     pointsArray = [];
     normalsArray = [];
