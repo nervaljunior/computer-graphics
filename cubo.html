@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <title>Cubo 3D com WebGL</title>
+
+    <!-- VERTEX SHADER -->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    attribute vec4 vColor;
+    uniform mat4 uProjection;
+
+    varying vec4 fColor;
+
+    void main() {
+        gl_Position = uProjection * vPosition;
+        fColor = vColor;
+    }
+    </script>
+
+    <!-- FRAGMENT SHADER -->
+    <script id="fragment-shader" type="x-shader/x-fragment">
+    precision mediump float;
+    varying vec4 fColor;
+
+    void main() {
+        gl_FragColor = fColor;
+    }
+    </script>
+
+    <!-- Bibliotecas Auxiliares -->
+    <script type="text/javascript" src="Common/MV.js"></script>
+    <script type="text/javascript" src="Common/webgl-utils.js"></script>
+    <script type="text/javascript" src="Common/initShaders.js"></script>
+
+    <!-- Script Principal -->
+    <script type="text/javascript" src="cubo.js"></script>
+</head>
+
+<body>
+    <canvas id="gl-canvas" width="512" height="512">
+        Seu navegador não suporta HTML5 Canvas.
+    </canvas>
+</body>
+</html>
